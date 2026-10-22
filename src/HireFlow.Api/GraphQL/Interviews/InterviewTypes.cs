@@ -4,8 +4,42 @@ using HireFlow.Domain.Common;
 using HireFlow.Domain.Interviews;
 using HireFlow.Infrastructure.Persistence;
 using HotChocolate.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace HireFlow.Api.GraphQL.Interviews;
+
+[QueryType]
+public static class InterviewQueries
+{
+    /// <summary>All interviews, with filtering (e.g. by interviewer or date range) and sorting.</summary>
+    [Authorize]
+    [UsePaging]
+    [UseFiltering]
+    [UseSorting]
+    public static IQueryable<Interview> GetInterviews(HireFlowDbContext db)
+        => db.Interviews.AsNoTracking().OrderBy(i => i.ScheduledAt);
+
+    /// <summary>The interviewer's agenda: interviews starting within the next <paramref name="days"/> days, soonest first.</summary>
+    [Authorize]
+    public static async Task<IReadOnlyList<Interview>> GetUpcomingInterviewsAsync(
+        HireFlowDbContext db,
+        TimeProvider clock,
+        CancellationToken ct,
+        int days = 7,
+        string? interviewer = null)
+    {
+        var now = clock.GetUtcNow().UtcDateTime;
+        var until = now.AddDays(Math.Clamp(days, 1, 90));
+
+        var query = db.Interviews.AsNoTracking().Where(i => i.ScheduledAt >= now && i.ScheduledAt < until);
+        if (!string.IsNullOrWhiteSpace(interviewer))
+        {
+            query = query.Where(i => i.Interviewer == interviewer.Trim());
+        }
+
+        return await query.OrderBy(i => i.ScheduledAt).Take(100).ToListAsync(ct);
+    }
+}
 
 [MutationType]
 public static class InterviewMutations

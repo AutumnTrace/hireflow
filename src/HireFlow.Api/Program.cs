@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddHireFlowAuth(builder.Configuration)
-    .AddHireFlowHealthChecks();
+    .AddHireFlowHealthChecks()
+    .AddSingleton(TimeProvider.System);
 
 builder.Services
     .AddGraphQLServer()
