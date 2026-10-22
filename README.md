@@ -12,7 +12,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 ![GraphQL](https://img.shields.io/badge/GraphQL-Hot%20Chocolate%2016-E10098?logo=graphql&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-10-512BD4)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-52%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Example operations](#-example-operations) · [Design decisions](#-design-decisions) · [Changelog](CHANGELOG.md)
@@ -65,7 +65,7 @@ Each release is published to GitHub Container Registry:
 docker run --rm -p 8080:8080 \
   -e Jwt__SigningKey="any-demo-key-that-is-at-least-32-chars" \
   -e Jwt__EnableDevTokens=true \
-  ghcr.io/autumntrace/hireflow:1.1.0
+  ghcr.io/autumntrace/hireflow:1.1.1
 ```
 
 This uses SQLite inside the container, which is enough for a quick look.
@@ -374,6 +374,7 @@ dotnet test
 | `Api/SubscriptionTests` | Opens a real `graphql-transport-ws` socket, checks that events are pushed and bad tokens are rejected |
 | `Api/InterviewQueryTests` | Interview agenda window, interviewer filter, feedback filtering, auth |
 | `Api/HealthCheckTests` | Liveness vs. readiness probes, database check |
+| `Api/CostAnalysisTests` | Real web-app queries fit the cost budget with variables; abusive fan-out is rejected |
 | `Api/SchemaSnapshotTests` | Fails if the schema changes without updating `schema.graphql` (`UPDATE_SCHEMA=1 dotnet test` to accept) |
 
 To run the suite against PostgreSQL locally:
@@ -415,6 +416,7 @@ Every key can be set through environment variables, e.g. `Database__Provider=Pos
 - [ ] Global object identification (`node(id:)`) for Relay clients
 - [x] Candidate ↔ job skill matching score
 - [ ] OpenTelemetry tracing for resolvers and SQL
+- [ ] Case-insensitive text search (Hot Chocolate `contains` is case-sensitive on SQLite and PostgreSQL)
 
 ## 📄 License
 
