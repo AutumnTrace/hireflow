@@ -22,6 +22,15 @@ public sealed class SchemaSnapshotTests(HireFlowApiFactory factory) : IClassFixt
         Assert.True(expected == actual, "schema.graphql is out of date. Re-run tests with UPDATE_SCHEMA=1 and commit the diff.");
     }
 
+    [Fact]
+    public async Task Domain_methods_are_not_exposed_as_query_fields()
+    {
+        var client = await factory.CreateGraphQLClientAsync();
+        var sdl = await client.Http.GetStringAsync("/graphql?sdl");
+
+        Assert.DoesNotContain("moveTo(", sdl, StringComparison.Ordinal);
+    }
+
     private static string Normalize(string sdl) => sdl.ReplaceLineEndings("\n").Trim() + "\n";
 
     private static string FindRepoRoot()

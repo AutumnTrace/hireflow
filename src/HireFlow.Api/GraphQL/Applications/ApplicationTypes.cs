@@ -92,7 +92,13 @@ public static class ApplicationMutations
 public static partial class JobApplicationNode
 {
     static partial void Configure(IObjectTypeDescriptor<JobApplication> descriptor)
-        => descriptor.Ignore(a => a.History);
+    {
+        descriptor.Ignore(a => a.History);
+
+        // Domain methods would otherwise be inferred as query fields. Stage changes
+        // must go through the moveApplication mutation, which persists and publishes them.
+        descriptor.Ignore(a => a.MoveTo(default, default));
+    }
 
     public static async Task<JobPosting> GetJobAsync(
         [Parent] JobApplication application, IJobByIdDataLoader loader, CancellationToken ct)

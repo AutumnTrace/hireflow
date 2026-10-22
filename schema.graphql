@@ -329,7 +329,6 @@ type JobApplication {
   interviews: [Interview!]! @cost(weight: "10")
   skillMatch: SkillMatch! @cost(weight: "10")
   allowedNextStages: [ApplicationStage!]!
-  moveTo(target: ApplicationStage!, note: String): StageTransition!
   id: UUID!
   jobPostingId: UUID!
   candidateId: UUID!
