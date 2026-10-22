@@ -19,6 +19,16 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 
 </div>
 
+> [!TIP]
+> **See it in action:** [HireFlow Web](https://github.com/AutumnTrace/hireflow-web) is the React + TypeScript front end for this API, with a drag-and-drop pipeline board and live subscriptions.
+> **[▶ Open the live demo](https://autumntrace.github.io/hireflow-web/)** (runs in your browser) or point it at a local API with `npm run dev`.
+
+<p align="center">
+  <a href="https://autumntrace.github.io/hireflow-web/">
+    <img src="https://raw.githubusercontent.com/AutumnTrace/hireflow-web/main/docs/screenshots/pipeline-light.png" alt="HireFlow Web pipeline board built on this API" width="100%">
+  </a>
+</p>
+
 ---
 
 ## ✨ Features
