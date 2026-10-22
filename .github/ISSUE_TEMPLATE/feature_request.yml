@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest a new query, mutation or capability
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that HireFlow doesn't support yet?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed schema
+      description: Sketch the GraphQL you would like to write.
+      render: graphql
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

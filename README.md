@@ -7,6 +7,7 @@
 Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 
 [![CI](https://github.com/AutumnTrace/hireflow/actions/workflows/ci.yml/badge.svg)](https://github.com/AutumnTrace/hireflow/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/AutumnTrace/hireflow?color=blue)](https://github.com/AutumnTrace/hireflow/releases)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)
 ![GraphQL](https://img.shields.io/badge/GraphQL-Hot%20Chocolate%2016-E10098?logo=graphql&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-10-512BD4)
@@ -14,7 +15,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 ![Tests](https://img.shields.io/badge/tests-48%20passing-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Example operations](#-example-operations) · [Design decisions](#-design-decisions)
+[Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Example operations](#-example-operations) · [Design decisions](#-design-decisions) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -55,6 +56,19 @@ docker compose up --build
 ```
 
 The API is at **http://localhost:8080/graphql**, backed by PostgreSQL 17.
+
+### Option C: prebuilt image
+
+Each release is published to GitHub Container Registry:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e Jwt__SigningKey="any-demo-key-that-is-at-least-32-chars" \
+  -e Jwt__EnableDevTokens=true \
+  ghcr.io/autumntrace/hireflow:1.0.0
+```
+
+This uses SQLite inside the container, which is enough for a quick look.
 
 ### Get a token
 
@@ -342,8 +356,9 @@ hireflow/
 │   └── Api/                        # End-to-end GraphQL, subscription and schema snapshot tests
 ├── docs/examples.graphql           # Ready-to-run operations
 ├── schema.graphql                  # Committed schema snapshot
+├── CHANGELOG.md
 ├── Dockerfile · docker-compose.yml
-└── .github/workflows/ci.yml        # Build + test on SQLite & PostgreSQL, Docker image build
+└── .github/                        # CI (SQLite + PostgreSQL), release → GHCR, Dependabot, templates
 ```
 
 ## ✅ Testing

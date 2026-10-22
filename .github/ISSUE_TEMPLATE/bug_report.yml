@@ -1,0 +1,35 @@
+name: Bug report
+description: Something in the API behaves incorrectly
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include the GraphQL operation and variables you sent.
+      placeholder: |
+        query { ... }
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: response
+    attributes:
+      label: Response
+      description: The JSON response, including `errors` if any.
+      render: json
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database provider
+      options: [SQLite, PostgreSQL]
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: v1.0.0
