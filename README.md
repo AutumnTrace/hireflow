@@ -11,7 +11,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 ![GraphQL](https://img.shields.io/badge/GraphQL-Hot%20Chocolate%2016-E10098?logo=graphql&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-10-512BD4)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-37%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-42%20passing-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Example operations](#-example-operations) · [Design decisions](#-design-decisions)
@@ -31,6 +31,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 | 📡 **Real-time** | **Subscriptions** over WebSockets push pipeline changes to a live board |
 | 🔐 **Auth** | JWT bearer auth with role-based `[Authorize]` on fields, mutations *and* WebSocket sessions |
 | 📊 **Analytics** | Per-job hiring funnel (`pipeline { total hireRate byStage }`) computed in one grouped SQL query |
+| 🎯 **Skill matching** | `skillMatch` scores how well an applicant covers a job's required skills; `recommendedJobs` ranks open roles for a candidate |
 | 🗄️ **Two databases** | SQLite for zero-setup local runs, PostgreSQL for Docker/production; CI runs the full suite on **both** |
 | 🧪 **Tested** | Domain unit tests, end-to-end GraphQL tests, WebSocket subscription tests and a **schema snapshot** test |
 | 🐳 **Ship-ready** | Multi-stage Dockerfile, `docker compose` stack, GitHub Actions CI |
@@ -199,6 +200,28 @@ query RecruiterDashboard {
 </details>
 
 <details>
+<summary><b>Skill matching</b>: how well does a candidate fit, and what else should they apply to? (auth)</summary>
+
+```graphql
+query CandidateFit {
+  candidates(where: { email: { eq: "ana.popescu@example.com" } }) {
+    nodes {
+      fullName
+      applications {
+        job { title }
+        skillMatch { score matchedSkills missingSkills }   # 0.5, [C#, .NET], [GraphQL, PostgreSQL]
+      }
+      recommendedJobs(limit: 3) {
+        job { title company { name } }
+        match { score matchedSkills }
+      }
+    }
+  }
+}
+```
+</details>
+
+<details>
 <summary><b>Typed errors</b>: what happens when you try to skip the interview</summary>
 
 ```graphql
@@ -253,7 +276,7 @@ subscription PipelineBoard($jobPostingId: UUID!) {
 |---|---|---|
 | `companies`, `company(id)` | `createCompany` | `onApplicationStageChanged(jobPostingId)` |
 | `jobs`, `job(id)` | `createJobPosting`, `publishJobPosting`, `closeJobPosting` | `onApplicationSubmitted(jobPostingId)` |
-| `candidates`, `candidate(id)` 🔒 | `registerCandidate` | |
+| `candidates`, `candidate(id)` 🔒 (+ `recommendedJobs`) | `registerCandidate` | |
 | `applications`, `application(id)` 🔒 | `submitApplication`, `moveApplication` | |
 | | `scheduleInterview`, `submitInterviewFeedback` | |
 
@@ -360,7 +383,7 @@ Every key can be set through environment variables, e.g. `Database__Provider=Pos
 - [ ] EF Core migrations, replacing `EnsureCreated`
 - [ ] Redis-backed subscriptions for multi-instance deployments
 - [ ] Global object identification (`node(id:)`) for Relay clients
-- [ ] Candidate ↔ job skill matching score
+- [x] Candidate ↔ job skill matching score
 - [ ] OpenTelemetry tracing for resolvers and SQL
 
 ## 📄 License

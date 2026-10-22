@@ -174,6 +174,38 @@ public sealed class GraphQLApiTests(HireFlowApiFactory factory) : IClassFixture<
         Assert.Equal("email", error.At("field").GetString());
     }
 
+    [Fact]
+    public async Task Candidates_get_ranked_job_recommendations_and_match_scores()
+    {
+        var client = await factory.CreateGraphQLClientAsync(Roles.Recruiter);
+
+        var result = await client.ExecuteAsync("""
+            {
+              candidates(where: { email: { eq: "ana.popescu@example.com" } }) {
+                nodes {
+                  applications { job { title } skillMatch { score matchedSkills missingSkills } }
+                  recommendedJobs(limit: 3) { job { title status } match { score } }
+                }
+              }
+            }
+            """);
+
+        Assert.False(result.HasErrors(), result.ToString());
+        var ana = result.At("data.candidates.nodes.0");
+
+        var applied = ana.At("applications.0");
+        Assert.Equal("Senior .NET Engineer", applied.At("job.title").GetString());
+        Assert.Equal(0.5, applied.At("skillMatch.score").GetDouble());
+        Assert.Equal(["GraphQL", "PostgreSQL"], applied.At("skillMatch.missingSkills").EnumerateArray().Select(s => s.GetString()));
+
+        var recommendations = ana.At("recommendedJobs").EnumerateArray().ToList();
+        Assert.NotEmpty(recommendations);
+        Assert.All(recommendations, r => Assert.Equal("OPEN", r.At("job.status").GetString()));
+        Assert.DoesNotContain(recommendations, r => r.At("job.title").GetString() == "Senior .NET Engineer");
+        var scores = recommendations.Select(r => r.At("match.score").GetDouble()).ToList();
+        Assert.Equal(scores.OrderDescending(), scores);
+    }
+
     private static async Task<string> MutateAsync(GraphQLClient client, string idPath, string mutation)
     {
         var result = await client.ExecuteAsync(mutation);
