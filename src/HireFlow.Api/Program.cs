@@ -1,4 +1,5 @@
 using HireFlow.Api.Auth;
+using HireFlow.Api.Health;
 using HireFlow.Infrastructure;
 using HireFlow.Infrastructure.Persistence;
 
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddHireFlowAuth(builder.Configuration)
-    .AddHealthChecks();
+    .AddHireFlowHealthChecks()
+    .AddSingleton(TimeProvider.System);
 
 builder.Services
     .AddGraphQLServer()
@@ -42,7 +44,7 @@ app.UseAuthorization();
 
 app.MapGraphQL();
 app.MapDevTokenEndpoint();
-app.MapHealthChecks("/health");
+app.MapHireFlowHealthChecks();
 app.MapGet("/", () => Results.Redirect("/graphql")).ExcludeFromDescription();
 
 await app.RunAsync();
