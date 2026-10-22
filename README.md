@@ -25,7 +25,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 
 <p align="center">
   <a href="https://autumntrace.github.io/hireflow-web/">
-    <img src="https://raw.githubusercontent.com/AutumnTrace/hireflow-web/main/docs/screenshots/pipeline-light.png" alt="HireFlow Web pipeline board built on this API" width="100%">
+    <img src="https://raw.githubusercontent.com/AutumnTrace/hireflow-web/main/docs/screenshots/v1.1-pipeline.png" alt="HireFlow Web pipeline board built on this API" width="100%">
   </a>
 </p>
 
