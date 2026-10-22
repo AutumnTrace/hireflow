@@ -67,6 +67,19 @@ query CandidateFit {
   }
 }
 
+# (auth) An interviewer's agenda for the coming week.
+query MyWeek {
+  upcomingInterviews(days: 7, interviewer: "Victor Moraru") {
+    kind
+    scheduledAt
+    durationMinutes
+    application {
+      candidate { fullName headline }
+      job { title }
+    }
+  }
+}
+
 # (auth) Move a candidate forward. Errors are part of the schema, so clients can switch on __typename.
 mutation Advance($applicationId: UUID!) {
   moveApplication(input: { applicationId: $applicationId, stage: SCREENING, note: "Great portfolio" }) {

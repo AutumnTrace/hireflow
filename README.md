@@ -11,7 +11,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 ![GraphQL](https://img.shields.io/badge/GraphQL-Hot%20Chocolate%2016-E10098?logo=graphql&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-10-512BD4)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-42%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-48%20passing-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Example operations](#-example-operations) · [Design decisions](#-design-decisions)
@@ -34,7 +34,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 | 🎯 **Skill matching** | `skillMatch` scores how well an applicant covers a job's required skills; `recommendedJobs` ranks open roles for a candidate |
 | 🗄️ **Two databases** | SQLite for zero-setup local runs, PostgreSQL for Docker/production; CI runs the full suite on **both** |
 | 🧪 **Tested** | Domain unit tests, end-to-end GraphQL tests, WebSocket subscription tests and a **schema snapshot** test |
-| 🐳 **Ship-ready** | Multi-stage Dockerfile, `docker compose` stack, GitHub Actions CI |
+| 🐳 **Ship-ready** | Multi-stage Dockerfile, `docker compose` stack, liveness/readiness health probes, GitHub Actions CI |
 
 ## 🚀 Quick start
 
@@ -278,7 +278,7 @@ subscription PipelineBoard($jobPostingId: UUID!) {
 | `jobs`, `job(id)` | `createJobPosting`, `publishJobPosting`, `closeJobPosting` | `onApplicationSubmitted(jobPostingId)` |
 | `candidates`, `candidate(id)` 🔒 (+ `recommendedJobs`) | `registerCandidate` | |
 | `applications`, `application(id)` 🔒 | `submitApplication`, `moveApplication` | |
-| | `scheduleInterview`, `submitInterviewFeedback` | |
+| `interviews`, `upcomingInterviews(days, interviewer)` 🔒 | `scheduleInterview`, `submitInterviewFeedback` | |
 
 🔒 requires authentication · all mutations require the `Recruiter` or `Admin` role
 
@@ -357,6 +357,8 @@ dotnet test
 | `Domain/*` | State machine transitions, terminal stages, validation and normalisation rules |
 | `Api/GraphQLApiTests` | Boots the real app with `WebApplicationFactory`, then covers auth, filtering, sorting, the full hiring flow and typed errors |
 | `Api/SubscriptionTests` | Opens a real `graphql-transport-ws` socket, checks that events are pushed and bad tokens are rejected |
+| `Api/InterviewQueryTests` | Interview agenda window, interviewer filter, feedback filtering, auth |
+| `Api/HealthCheckTests` | Liveness vs. readiness probes, database check |
 | `Api/SchemaSnapshotTests` | Fails if the schema changes without updating `schema.graphql` (`UPDATE_SCHEMA=1 dotnet test` to accept) |
 
 To run the suite against PostgreSQL locally:
@@ -377,6 +379,18 @@ HIREFLOW_TEST_POSTGRES="Host=localhost;Username=hireflow;Password=hireflow" dotn
 | `Jwt:EnableDevTokens` | `false` | Expose `POST /auth/token` (dev/demo only) |
 
 Every key can be set through environment variables, e.g. `Database__Provider=Postgres`.
+
+### Health probes
+
+| Endpoint | Checks | Use as |
+|---|---|---|
+| `GET /health/live` | Process is running | Liveness probe |
+| `GET /health/ready` | Database connection | Readiness probe |
+| `GET /health` | Everything | Manual check |
+
+```json
+{ "status": "Healthy", "durationMs": 3.1, "checks": [{ "name": "database", "status": "Healthy", "durationMs": 2.9, "error": null }] }
+```
 
 ## 🗺 Roadmap
 
