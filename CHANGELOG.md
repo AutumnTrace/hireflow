@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-22
+
 ### Added
 
 - Configurable CORS (`Cors:AllowedOrigins`) so browser front ends on other origins can call the API
@@ -35,5 +37,6 @@ First stable release.
 - Docker image published to GitHub Container Registry on every release tag
 - Dependabot, issue and pull request templates (#3)
 
-[Unreleased]: https://github.com/AutumnTrace/hireflow/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/AutumnTrace/hireflow/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/AutumnTrace/hireflow/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/AutumnTrace/hireflow/releases/tag/v1.0.0

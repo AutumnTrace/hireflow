@@ -65,7 +65,7 @@ Each release is published to GitHub Container Registry:
 docker run --rm -p 8080:8080 \
   -e Jwt__SigningKey="any-demo-key-that-is-at-least-32-chars" \
   -e Jwt__EnableDevTokens=true \
-  ghcr.io/autumntrace/hireflow:1.0.0
+  ghcr.io/autumntrace/hireflow:1.1.0
 ```
 
 This uses SQLite inside the container, which is enough for a quick look.
