@@ -1,4 +1,5 @@
 using HireFlow.Api.Auth;
+using HireFlow.Api.Cors;
 using HireFlow.Api.Health;
 using HireFlow.Infrastructure;
 using HireFlow.Infrastructure.Persistence;
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddHireFlowAuth(builder.Configuration)
+    .AddHireFlowCors(builder.Configuration)
     .AddHireFlowHealthChecks()
     .AddSingleton(TimeProvider.System);
 
@@ -39,6 +41,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseWebSockets();
+app.UseCors(CorsSetup.PolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
 

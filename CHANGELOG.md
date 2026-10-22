@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Configurable CORS (`Cors:AllowedOrigins`) so browser front ends on other origins can call the API
+
+### Fixed
+
+- `JobApplication.moveTo` was unintentionally exposed as a query field by Hot Chocolate's method inference; stage changes now only go through `moveApplication`
+
 ## [1.0.0] - 2026-10-22
 
 First stable release.
