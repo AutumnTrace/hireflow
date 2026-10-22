@@ -50,6 +50,23 @@ query FindDotNetPeople {
   }
 }
 
+# (auth) Skill fit for existing applications, plus open roles worth applying to.
+query CandidateFit {
+  candidates(where: { email: { eq: "ana.popescu@example.com" } }) {
+    nodes {
+      fullName
+      applications {
+        job { title }
+        skillMatch { score matchedSkills missingSkills }
+      }
+      recommendedJobs(limit: 3) {
+        job { title company { name } }
+        match { score matchedSkills }
+      }
+    }
+  }
+}
+
 # (auth) Move a candidate forward. Errors are part of the schema, so clients can switch on __typename.
 mutation Advance($applicationId: UUID!) {
   moveApplication(input: { applicationId: $applicationId, stage: SCREENING, note: "Great portfolio" }) {
