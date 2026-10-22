@@ -1,0 +1,36 @@
+# Runs HireFlow against PostgreSQL:  docker compose up --build
+# GraphQL IDE: http://localhost:8080/graphql
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: hireflow
+      POSTGRES_PASSWORD: hireflow
+      POSTGRES_DB: hireflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hireflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      Database__Provider: Postgres
+      ConnectionStrings__HireFlow: Host=db;Database=hireflow;Username=hireflow;Password=hireflow
+      # Demo-only settings. Use a real secret and identity provider in production.
+      Jwt__SigningKey: docker-demo-signing-key-change-me-0123456789
+      Jwt__EnableDevTokens: "true"
+
+volumes:
+  pgdata:

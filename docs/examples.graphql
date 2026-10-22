@@ -1,0 +1,74 @@
+# Ready-to-run operations. Paste them into the GraphQL IDE at http://localhost:5230/graphql
+# For anything marked (auth), first POST /auth/token and add the header:
+#   Authorization: Bearer <accessToken>
+
+# Public job board: open postings, filtered and sorted, with their companies (batched via DataLoader).
+query JobBoard {
+  jobs(
+    first: 10
+    where: { workMode: { in: [REMOTE, HYBRID] }, salary: { min: { gte: 40000 } } }
+    order: [{ publishedAt: DESC }]
+  ) {
+    totalCount
+    pageInfo { hasNextPage endCursor }
+    nodes {
+      title
+      workMode
+      employmentType
+      requiredSkills
+      salary { min max currency }
+      company { name location }
+    }
+  }
+}
+
+# (auth) Recruiter dashboard: funnel per job plus every application with its timeline.
+query RecruiterDashboard {
+  jobs(where: { status: { eq: OPEN } }) {
+    nodes {
+      title
+      pipeline {
+        total
+        hireRate
+        byStage { stage count }
+      }
+      applications {
+        stage
+        allowedNextStages
+        candidate { fullName headline yearsOfExperience }
+        history { from to note changedAt }
+        interviews { kind scheduledAt interviewer rating }
+      }
+    }
+  }
+}
+
+# (auth) Search candidates by skill.
+query FindDotNetPeople {
+  candidates(where: { skills: { some: { eq: "C#" } } }, order: [{ yearsOfExperience: DESC }]) {
+    nodes { fullName email yearsOfExperience skills }
+  }
+}
+
+# (auth) Move a candidate forward. Errors are part of the schema, so clients can switch on __typename.
+mutation Advance($applicationId: UUID!) {
+  moveApplication(input: { applicationId: $applicationId, stage: SCREENING, note: "Great portfolio" }) {
+    jobApplication { stage allowedNextStages }
+    errors {
+      __typename
+      ... on InvalidStageTransitionError { message from to allowedStages }
+      ... on EntityNotFoundError { message }
+    }
+  }
+}
+
+# (auth) Live pipeline board over WebSockets.
+subscription PipelineBoard($jobPostingId: UUID!) {
+  onApplicationStageChanged(jobPostingId: $jobPostingId) {
+    from
+    to
+    note
+    changedAt
+    application { candidate { fullName } }
+  }
+}

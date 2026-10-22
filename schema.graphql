@@ -1,0 +1,832 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Query {
+  applications(
+    "Returns the first _n_ elements from the list."
+    first: Int
+    "Returns the elements in the list that come after the specified cursor."
+    after: String
+    "Returns the last _n_ elements from the list."
+    last: Int
+    "Returns the elements in the list that come before the specified cursor."
+    before: String
+    where: JobApplicationFilterInput @cost(weight: "10")
+    order: [JobApplicationSortInput!] @cost(weight: "10")
+  ): ApplicationsConnection
+    @listSize(
+      assumedSize: 50
+      slicingArguments: ["first", "last"]
+      slicingArgumentDefaultValue: 10
+      sizedFields: ["edges", "nodes"]
+      requireOneSlicingArgument: false
+    )
+    @cost(weight: "10")
+  application(id: UUID!): JobApplication @cost(weight: "10")
+  candidates(
+    "Returns the first _n_ elements from the list."
+    first: Int
+    "Returns the elements in the list that come after the specified cursor."
+    after: String
+    "Returns the last _n_ elements from the list."
+    last: Int
+    "Returns the elements in the list that come before the specified cursor."
+    before: String
+    where: CandidateFilterInput @cost(weight: "10")
+    order: [CandidateSortInput!] @cost(weight: "10")
+  ): CandidatesConnection
+    @listSize(
+      assumedSize: 50
+      slicingArguments: ["first", "last"]
+      slicingArgumentDefaultValue: 10
+      sizedFields: ["edges", "nodes"]
+      requireOneSlicingArgument: false
+    )
+    @cost(weight: "10")
+  candidate(id: UUID!): Candidate @cost(weight: "10")
+  companies(
+    "Returns the first _n_ elements from the list."
+    first: Int
+    "Returns the elements in the list that come after the specified cursor."
+    after: String
+    "Returns the last _n_ elements from the list."
+    last: Int
+    "Returns the elements in the list that come before the specified cursor."
+    before: String
+    where: CompanyFilterInput @cost(weight: "10")
+    order: [CompanySortInput!] @cost(weight: "10")
+  ): CompaniesConnection
+    @listSize(
+      assumedSize: 50
+      slicingArguments: ["first", "last"]
+      slicingArgumentDefaultValue: 10
+      sizedFields: ["edges", "nodes"]
+      requireOneSlicingArgument: false
+    )
+    @cost(weight: "10")
+  company(id: UUID!): Company @cost(weight: "10")
+  jobs(
+    "Returns the first _n_ elements from the list."
+    first: Int
+    "Returns the elements in the list that come after the specified cursor."
+    after: String
+    "Returns the last _n_ elements from the list."
+    last: Int
+    "Returns the elements in the list that come before the specified cursor."
+    before: String
+    where: JobPostingFilterInput @cost(weight: "10")
+    order: [JobPostingSortInput!] @cost(weight: "10")
+  ): JobsConnection
+    @listSize(
+      assumedSize: 50
+      slicingArguments: ["first", "last"]
+      slicingArgumentDefaultValue: 10
+      sizedFields: ["edges", "nodes"]
+      requireOneSlicingArgument: false
+    )
+    @cost(weight: "10")
+  job(id: UUID!): JobPosting @cost(weight: "10")
+}
+
+type Mutation {
+  submitApplication(input: SubmitApplicationInput!): SubmitApplicationPayload!
+    @cost(weight: "10")
+  moveApplication(input: MoveApplicationInput!): MoveApplicationPayload!
+    @cost(weight: "10")
+  registerCandidate(input: RegisterCandidateInput!): RegisterCandidatePayload!
+    @cost(weight: "10")
+  createCompany(input: CreateCompanyInput!): CreateCompanyPayload!
+    @cost(weight: "10")
+  scheduleInterview(input: ScheduleInterviewInput!): ScheduleInterviewPayload!
+    @cost(weight: "10")
+  submitInterviewFeedback(input: SubmitInterviewFeedbackInput!): SubmitInterviewFeedbackPayload!
+    @cost(weight: "10")
+  createJobPosting(input: CreateJobPostingInput!): CreateJobPostingPayload!
+    @cost(weight: "10")
+  publishJobPosting(input: PublishJobPostingInput!): PublishJobPostingPayload!
+    @cost(weight: "10")
+  closeJobPosting(input: CloseJobPostingInput!): CloseJobPostingPayload!
+    @cost(weight: "10")
+}
+
+type Subscription {
+  onApplicationStageChanged(jobPostingId: UUID!): ApplicationStageChanged!
+    @cost(weight: "10")
+  onApplicationSubmitted(jobPostingId: UUID!): JobApplication!
+    @cost(weight: "10")
+}
+
+type ApplicationClosedError implements Error {
+  message: String!
+  applicationId: UUID!
+  stage: ApplicationStage!
+}
+
+"A connection to a list of items."
+type ApplicationsConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [ApplicationsEdge!]
+  "A flattened list of the nodes."
+  nodes: [JobApplication!]
+  "Identifies the total count of items in the connection."
+  totalCount: Int! @cost(weight: "10")
+}
+
+"An edge in a connection."
+type ApplicationsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: JobApplication!
+}
+
+type ApplicationStageChanged {
+  applicationId: UUID!
+  jobPostingId: UUID!
+  from: ApplicationStage
+  to: ApplicationStage!
+  note: String
+  changedAt: DateTime!
+  application: JobApplication! @cost(weight: "10")
+}
+
+type Candidate {
+  applications: [JobApplication!]! @cost(weight: "10")
+  id: UUID!
+  fullName: String!
+  email: String!
+  headline: String
+  yearsOfExperience: Int!
+  skills: [String!]!
+  createdAt: DateTime!
+}
+
+"A connection to a list of items."
+type CandidatesConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [CandidatesEdge!]
+  "A flattened list of the nodes."
+  nodes: [Candidate!]
+  "Identifies the total count of items in the connection."
+  totalCount: Int! @cost(weight: "10")
+}
+
+"An edge in a connection."
+type CandidatesEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Candidate!
+}
+
+type CloseJobPostingPayload {
+  jobPosting: JobPosting
+  errors: [CloseJobPostingError!]
+}
+
+"A connection to a list of items."
+type CompaniesConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [CompaniesEdge!]
+  "A flattened list of the nodes."
+  nodes: [Company!]
+  "Identifies the total count of items in the connection."
+  totalCount: Int! @cost(weight: "10")
+}
+
+"An edge in a connection."
+type CompaniesEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Company!
+}
+
+type Company {
+  jobs(status: JobStatus): [JobPosting!]! @cost(weight: "10")
+  id: UUID!
+  name: String!
+  website: String
+  industry: String
+  location: String
+  createdAt: DateTime!
+}
+
+type CreateCompanyPayload {
+  company: Company
+  errors: [CreateCompanyError!]
+}
+
+type CreateJobPostingPayload {
+  jobPosting: JobPosting
+  errors: [CreateJobPostingError!]
+}
+
+type DomainValidationError implements Error {
+  message: String!
+  field: String!
+}
+
+type DuplicateApplicationError implements Error {
+  message: String!
+  jobPostingId: UUID!
+  candidateId: UUID!
+}
+
+type DuplicateCandidateError implements Error {
+  message: String!
+  email: String!
+}
+
+type DuplicateCompanyError implements Error {
+  message: String!
+  name: String!
+}
+
+type EntityNotFoundError implements Error {
+  message: String!
+  entity: String!
+  entityId: UUID!
+}
+
+type Interview {
+  application: JobApplication! @cost(weight: "10")
+  id: UUID!
+  applicationId: UUID!
+  kind: InterviewKind!
+  scheduledAt: DateTime!
+  durationMinutes: Int!
+  interviewer: String!
+  rating: Int
+  feedback: String
+  feedbackSubmittedAt: DateTime
+}
+
+type InvalidStageTransitionError implements Error {
+  message: String!
+  applicationId: UUID!
+  from: ApplicationStage!
+  to: ApplicationStage!
+  allowedStages: [ApplicationStage!]!
+}
+
+type JobApplication {
+  job: JobPosting! @cost(weight: "10")
+  candidate: Candidate! @cost(weight: "10")
+  history: [StageTransition!]! @cost(weight: "10")
+  interviews: [Interview!]! @cost(weight: "10")
+  allowedNextStages: [ApplicationStage!]!
+  moveTo(target: ApplicationStage!, note: String): StageTransition!
+  id: UUID!
+  jobPostingId: UUID!
+  candidateId: UUID!
+  stage: ApplicationStage!
+  coverLetter: String
+  appliedAt: DateTime!
+  updatedAt: DateTime!
+  isActive: Boolean!
+}
+
+type JobPosting {
+  company: Company! @cost(weight: "10")
+  applications(stage: ApplicationStage): [JobApplication!]! @cost(weight: "10")
+  pipeline: PipelineStats! @cost(weight: "10")
+  id: UUID!
+  companyId: UUID!
+  title: String!
+  description: String!
+  location: String
+  workMode: WorkMode!
+  employmentType: EmploymentType!
+  salary: SalaryRange
+  requiredSkills: [String!]!
+  status: JobStatus!
+  createdAt: DateTime!
+  publishedAt: DateTime
+  closedAt: DateTime
+}
+
+"A connection to a list of items."
+type JobsConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [JobsEdge!]
+  "A flattened list of the nodes."
+  nodes: [JobPosting!]
+  "Identifies the total count of items in the connection."
+  totalCount: Int! @cost(weight: "10")
+}
+
+"An edge in a connection."
+type JobsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: JobPosting!
+}
+
+type JobStatusError implements Error {
+  message: String!
+  jobId: UUID!
+  status: JobStatus!
+}
+
+type MoveApplicationPayload {
+  jobApplication: JobApplication
+  errors: [MoveApplicationError!]
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "Indicates whether more edges exist following the set defined by the clients arguments."
+  hasNextPage: Boolean!
+  "Indicates whether more edges exist prior the set defined by the clients arguments."
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+type PipelineStats {
+  total: Int!
+  byStage: [StageCount!]!
+  hireRate: Float!
+}
+
+type PublishJobPostingPayload {
+  jobPosting: JobPosting
+  errors: [PublishJobPostingError!]
+}
+
+type RegisterCandidatePayload {
+  candidate: Candidate
+  errors: [RegisterCandidateError!]
+}
+
+type SalaryRange {
+  min: Int!
+  max: Int!
+  currency: String!
+}
+
+type ScheduleInterviewPayload {
+  interview: Interview
+  errors: [ScheduleInterviewError!]
+}
+
+type StageCount {
+  stage: ApplicationStage!
+  count: Int!
+}
+
+type StageTransition {
+  id: UUID!
+  applicationId: UUID!
+  from: ApplicationStage
+  to: ApplicationStage!
+  note: String
+  changedAt: DateTime!
+}
+
+type SubmitApplicationPayload {
+  jobApplication: JobApplication
+  errors: [SubmitApplicationError!]
+}
+
+type SubmitInterviewFeedbackPayload {
+  interview: Interview
+  errors: [SubmitInterviewFeedbackError!]
+}
+
+interface Error {
+  message: String!
+}
+
+union CloseJobPostingError = EntityNotFoundError | JobStatusError
+
+union CreateCompanyError = DomainValidationError | DuplicateCompanyError
+
+union CreateJobPostingError = DomainValidationError | EntityNotFoundError
+
+union MoveApplicationError =
+  | EntityNotFoundError
+  | InvalidStageTransitionError
+  | DomainValidationError
+
+union PublishJobPostingError = EntityNotFoundError | JobStatusError
+
+union RegisterCandidateError = DomainValidationError | DuplicateCandidateError
+
+union ScheduleInterviewError =
+  | EntityNotFoundError
+  | ApplicationClosedError
+  | DomainValidationError
+
+union SubmitApplicationError =
+  | EntityNotFoundError
+  | JobStatusError
+  | DuplicateApplicationError
+  | DomainValidationError
+
+union SubmitInterviewFeedbackError = EntityNotFoundError | DomainValidationError
+
+input ApplicationStageOperationFilterInput {
+  eq: ApplicationStage @cost(weight: "10")
+  neq: ApplicationStage @cost(weight: "10")
+  in: [ApplicationStage!] @cost(weight: "10")
+  nin: [ApplicationStage!] @cost(weight: "10")
+}
+
+input BooleanOperationFilterInput {
+  eq: Boolean @cost(weight: "10")
+  neq: Boolean @cost(weight: "10")
+}
+
+input CandidateFilterInput {
+  and: [CandidateFilterInput!]
+  or: [CandidateFilterInput!]
+  id: UuidOperationFilterInput
+  fullName: StringOperationFilterInput
+  email: StringOperationFilterInput
+  headline: StringOperationFilterInput
+  yearsOfExperience: IntOperationFilterInput
+  skills: ListStringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+}
+
+input CandidateSortInput {
+  id: SortEnumType @cost(weight: "10")
+  fullName: SortEnumType @cost(weight: "10")
+  email: SortEnumType @cost(weight: "10")
+  headline: SortEnumType @cost(weight: "10")
+  yearsOfExperience: SortEnumType @cost(weight: "10")
+  createdAt: SortEnumType @cost(weight: "10")
+}
+
+input CloseJobPostingInput {
+  id: UUID!
+}
+
+input CompanyFilterInput {
+  and: [CompanyFilterInput!]
+  or: [CompanyFilterInput!]
+  id: UuidOperationFilterInput
+  name: StringOperationFilterInput
+  website: StringOperationFilterInput
+  industry: StringOperationFilterInput
+  location: StringOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+}
+
+input CompanySortInput {
+  id: SortEnumType @cost(weight: "10")
+  name: SortEnumType @cost(weight: "10")
+  website: SortEnumType @cost(weight: "10")
+  industry: SortEnumType @cost(weight: "10")
+  location: SortEnumType @cost(weight: "10")
+  createdAt: SortEnumType @cost(weight: "10")
+}
+
+input CreateCompanyInput {
+  name: String!
+  website: String
+  industry: String
+  location: String
+}
+
+input CreateJobPostingInput {
+  companyId: UUID!
+  title: String!
+  description: String!
+  location: String
+  workMode: WorkMode!
+  employmentType: EmploymentType!
+  salary: SalaryRangeInput
+  requiredSkills: [String!]
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime @cost(weight: "10")
+  neq: DateTime @cost(weight: "10")
+  in: [DateTime] @cost(weight: "10")
+  nin: [DateTime] @cost(weight: "10")
+  gt: DateTime @cost(weight: "10")
+  ngt: DateTime @cost(weight: "10")
+  gte: DateTime @cost(weight: "10")
+  ngte: DateTime @cost(weight: "10")
+  lt: DateTime @cost(weight: "10")
+  nlt: DateTime @cost(weight: "10")
+  lte: DateTime @cost(weight: "10")
+  nlte: DateTime @cost(weight: "10")
+}
+
+input EmploymentTypeOperationFilterInput {
+  eq: EmploymentType @cost(weight: "10")
+  neq: EmploymentType @cost(weight: "10")
+  in: [EmploymentType!] @cost(weight: "10")
+  nin: [EmploymentType!] @cost(weight: "10")
+}
+
+input IntOperationFilterInput {
+  eq: Int @cost(weight: "10")
+  neq: Int @cost(weight: "10")
+  in: [Int] @cost(weight: "10")
+  nin: [Int] @cost(weight: "10")
+  gt: Int @cost(weight: "10")
+  ngt: Int @cost(weight: "10")
+  gte: Int @cost(weight: "10")
+  ngte: Int @cost(weight: "10")
+  lt: Int @cost(weight: "10")
+  nlt: Int @cost(weight: "10")
+  lte: Int @cost(weight: "10")
+  nlte: Int @cost(weight: "10")
+}
+
+input JobApplicationFilterInput {
+  and: [JobApplicationFilterInput!]
+  or: [JobApplicationFilterInput!]
+  id: UuidOperationFilterInput
+  jobPostingId: UuidOperationFilterInput
+  candidateId: UuidOperationFilterInput
+  stage: ApplicationStageOperationFilterInput
+  coverLetter: StringOperationFilterInput
+  appliedAt: DateTimeOperationFilterInput
+  updatedAt: DateTimeOperationFilterInput
+  history: ListFilterInputTypeOfStageTransitionFilterInput
+  isActive: BooleanOperationFilterInput
+}
+
+input JobApplicationSortInput {
+  id: SortEnumType @cost(weight: "10")
+  jobPostingId: SortEnumType @cost(weight: "10")
+  candidateId: SortEnumType @cost(weight: "10")
+  stage: SortEnumType @cost(weight: "10")
+  coverLetter: SortEnumType @cost(weight: "10")
+  appliedAt: SortEnumType @cost(weight: "10")
+  updatedAt: SortEnumType @cost(weight: "10")
+  isActive: SortEnumType @cost(weight: "10")
+}
+
+input JobPostingFilterInput {
+  and: [JobPostingFilterInput!]
+  or: [JobPostingFilterInput!]
+  id: UuidOperationFilterInput
+  companyId: UuidOperationFilterInput
+  title: StringOperationFilterInput
+  description: StringOperationFilterInput
+  location: StringOperationFilterInput
+  workMode: WorkModeOperationFilterInput
+  employmentType: EmploymentTypeOperationFilterInput
+  salary: SalaryRangeFilterInput
+  requiredSkills: ListStringOperationFilterInput
+  status: JobStatusOperationFilterInput
+  createdAt: DateTimeOperationFilterInput
+  publishedAt: DateTimeOperationFilterInput
+  closedAt: DateTimeOperationFilterInput
+}
+
+input JobPostingSortInput {
+  id: SortEnumType @cost(weight: "10")
+  companyId: SortEnumType @cost(weight: "10")
+  title: SortEnumType @cost(weight: "10")
+  description: SortEnumType @cost(weight: "10")
+  location: SortEnumType @cost(weight: "10")
+  workMode: SortEnumType @cost(weight: "10")
+  employmentType: SortEnumType @cost(weight: "10")
+  salary: SalaryRangeSortInput @cost(weight: "10")
+  status: SortEnumType @cost(weight: "10")
+  createdAt: SortEnumType @cost(weight: "10")
+  publishedAt: SortEnumType @cost(weight: "10")
+  closedAt: SortEnumType @cost(weight: "10")
+}
+
+input JobStatusOperationFilterInput {
+  eq: JobStatus @cost(weight: "10")
+  neq: JobStatus @cost(weight: "10")
+  in: [JobStatus!] @cost(weight: "10")
+  nin: [JobStatus!] @cost(weight: "10")
+}
+
+input ListFilterInputTypeOfStageTransitionFilterInput {
+  all: StageTransitionFilterInput @cost(weight: "10")
+  none: StageTransitionFilterInput @cost(weight: "10")
+  some: StageTransitionFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input ListStringOperationFilterInput {
+  all: StringOperationFilterInput @cost(weight: "10")
+  none: StringOperationFilterInput @cost(weight: "10")
+  some: StringOperationFilterInput @cost(weight: "10")
+  any: Boolean @cost(weight: "10")
+}
+
+input MoveApplicationInput {
+  applicationId: UUID!
+  stage: ApplicationStage!
+  note: String
+}
+
+input NullableOfApplicationStageOperationFilterInput {
+  eq: ApplicationStage @cost(weight: "10")
+  neq: ApplicationStage @cost(weight: "10")
+  in: [ApplicationStage] @cost(weight: "10")
+  nin: [ApplicationStage] @cost(weight: "10")
+}
+
+input PublishJobPostingInput {
+  id: UUID!
+}
+
+input RegisterCandidateInput {
+  fullName: String!
+  email: String!
+  headline: String
+  yearsOfExperience: Int!
+  skills: [String!]
+}
+
+input SalaryRangeFilterInput {
+  and: [SalaryRangeFilterInput!]
+  or: [SalaryRangeFilterInput!]
+  min: IntOperationFilterInput
+  max: IntOperationFilterInput
+  currency: StringOperationFilterInput
+}
+
+input SalaryRangeInput {
+  min: Int!
+  max: Int!
+  currency: String!
+}
+
+input SalaryRangeSortInput {
+  min: SortEnumType @cost(weight: "10")
+  max: SortEnumType @cost(weight: "10")
+  currency: SortEnumType @cost(weight: "10")
+}
+
+input ScheduleInterviewInput {
+  applicationId: UUID!
+  kind: InterviewKind!
+  scheduledAt: DateTime!
+  durationMinutes: Int!
+  interviewer: String!
+}
+
+input StageTransitionFilterInput {
+  and: [StageTransitionFilterInput!]
+  or: [StageTransitionFilterInput!]
+  id: UuidOperationFilterInput
+  applicationId: UuidOperationFilterInput
+  from: NullableOfApplicationStageOperationFilterInput
+  to: ApplicationStageOperationFilterInput
+  note: StringOperationFilterInput
+  changedAt: DateTimeOperationFilterInput
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String @cost(weight: "10")
+  neq: String @cost(weight: "10")
+  contains: String @cost(weight: "20")
+  ncontains: String @cost(weight: "20")
+  in: [String] @cost(weight: "10")
+  nin: [String] @cost(weight: "10")
+  startsWith: String @cost(weight: "20")
+  nstartsWith: String @cost(weight: "20")
+  endsWith: String @cost(weight: "20")
+  nendsWith: String @cost(weight: "20")
+}
+
+input SubmitApplicationInput {
+  jobPostingId: UUID!
+  candidateId: UUID!
+  coverLetter: String
+}
+
+input SubmitInterviewFeedbackInput {
+  interviewId: UUID!
+  rating: Int!
+  feedback: String
+}
+
+input UuidOperationFilterInput {
+  eq: UUID @cost(weight: "10")
+  neq: UUID @cost(weight: "10")
+  in: [UUID] @cost(weight: "10")
+  nin: [UUID] @cost(weight: "10")
+  gt: UUID @cost(weight: "10")
+  ngt: UUID @cost(weight: "10")
+  gte: UUID @cost(weight: "10")
+  ngte: UUID @cost(weight: "10")
+  lt: UUID @cost(weight: "10")
+  nlt: UUID @cost(weight: "10")
+  lte: UUID @cost(weight: "10")
+  nlte: UUID @cost(weight: "10")
+}
+
+input WorkModeOperationFilterInput {
+  eq: WorkMode @cost(weight: "10")
+  neq: WorkMode @cost(weight: "10")
+  in: [WorkMode!] @cost(weight: "10")
+  nin: [WorkMode!] @cost(weight: "10")
+}
+
+enum ApplicationStage {
+  APPLIED
+  SCREENING
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+  WITHDRAWN
+}
+
+"Defines when a policy shall be executed."
+enum ApplyPolicy {
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum InterviewKind {
+  PHONE_SCREEN
+  TECHNICAL
+  SYSTEM_DESIGN
+  BEHAVIORAL
+  ONSITE
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+enum WorkMode {
+  ONSITE
+  HYBRID
+  REMOTE
+}
+
+"The `DateTime` scalar type represents a date and time with time zone offset information."
+scalar DateTime
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/date-time.html")
+
+"The `UUID` scalar type represents a Universally Unique Identifier (UUID) as defined by RFC 9562."
+scalar UUID
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/uuid.html")
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost(
+  "The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc."
+  weight: String!
+) on
+  | SCALAR
+  | OBJECT
+  | FIELD_DEFINITION
+  | ARGUMENT_DEFINITION
+  | ENUM
+  | INPUT_FIELD_DEFINITION
+
+"The purpose of the `@listSize` directive is to either inform the static analysis about the size of returned lists (if that information is statically available), or to point the analysis to where to find that information."
+directive @listSize(
+  "The `assumedSize` argument can be used to statically define the maximum length of a list returned by a field."
+  assumedSize: Int
+  "The `slicingArguments` argument can be used to define which of the field's arguments with numeric type are slicing arguments, so that their value determines the size of the list returned by that field. It may specify a list of multiple slicing arguments."
+  slicingArguments: [String!]
+  "The `slicingArgumentDefaultValue` argument can be used to define a default value for a slicing argument, which is used if the argument is not present in a query."
+  slicingArgumentDefaultValue: Int
+  "The `sizedFields` argument can be used to define that the value of the `assumedSize` argument or of a slicing argument does not affect the size of a list returned by a field itself, but that of a list returned by one of its sub-fields."
+  sizedFields: [String!]
+  "The `requireOneSlicingArgument` argument can be used to inform the static analysis that it should expect that exactly one of the defined slicing arguments is present in a query. If that is not the case (i.e., if none or multiple slicing arguments are present), the static analysis may throw an error."
+  requireOneSlicingArgument: Boolean = true
+) on FIELD_DEFINITION
