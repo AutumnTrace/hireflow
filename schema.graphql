@@ -157,6 +157,7 @@ type ApplicationStageChanged {
 
 type Candidate {
   applications: [JobApplication!]! @cost(weight: "10")
+  recommendedJobs(limit: Int! = 5): [JobRecommendation!]! @cost(weight: "10")
   id: UUID!
   fullName: String!
   email: String!
@@ -284,6 +285,7 @@ type JobApplication {
   candidate: Candidate! @cost(weight: "10")
   history: [StageTransition!]! @cost(weight: "10")
   interviews: [Interview!]! @cost(weight: "10")
+  skillMatch: SkillMatch! @cost(weight: "10")
   allowedNextStages: [ApplicationStage!]!
   moveTo(target: ApplicationStage!, note: String): StageTransition!
   id: UUID!
@@ -313,6 +315,11 @@ type JobPosting {
   createdAt: DateTime!
   publishedAt: DateTime
   closedAt: DateTime
+}
+
+type JobRecommendation {
+  job: JobPosting!
+  match: SkillMatch!
 }
 
 "A connection to a list of items."
@@ -383,6 +390,12 @@ type SalaryRange {
 type ScheduleInterviewPayload {
   interview: Interview
   errors: [ScheduleInterviewError!]
+}
+
+type SkillMatch {
+  score: Float!
+  matchedSkills: [String!]!
+  missingSkills: [String!]!
 }
 
 type StageCount {

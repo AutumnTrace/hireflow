@@ -111,6 +111,18 @@ public static partial class JobApplicationNode
         [Parent] JobApplication application, IInterviewsByApplicationIdDataLoader loader, CancellationToken ct)
         => await loader.LoadAsync(application.Id, ct) ?? [];
 
+    /// <summary>How well the candidate's skills cover the posting's requirements.</summary>
+    public static async Task<SkillMatch> GetSkillMatchAsync(
+        [Parent] JobApplication application,
+        IJobByIdDataLoader jobs,
+        ICandidateByIdDataLoader candidates,
+        CancellationToken ct)
+    {
+        var job = await jobs.LoadRequiredAsync(application.JobPostingId, ct);
+        var candidate = await candidates.LoadRequiredAsync(application.CandidateId, ct);
+        return SkillMatch.Evaluate(job.RequiredSkills, candidate.Skills);
+    }
+
     /// <summary>Stages this application may legally move to next — handy for rendering UI buttons.</summary>
     public static IReadOnlyList<ApplicationStage> GetAllowedNextStages([Parent] JobApplication application)
         => ApplicationStageRules.AllowedNext(application.Stage);
