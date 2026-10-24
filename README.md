@@ -23,9 +23,16 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 > **See it in action:** [HireFlow Web](https://github.com/AutumnTrace/hireflow-web) is the React + TypeScript front end for this API, with a drag-and-drop pipeline board and live subscriptions.
 > **[▶ Open the live demo](https://autumntrace.github.io/hireflow-web/)** (runs in your browser) or point it at a local API with `npm run dev`.
 
+### Built on HireFlow
+
+| Project | What it does with this API |
+|---|---|
+| [**HireFlow Web**](https://github.com/AutumnTrace/hireflow-web) | React pipeline board: queries with filtering and paging, `moveApplication` with typed errors, live `onApplicationStageChanged` subscriptions |
+| [**HireFlow Copilot**](https://github.com/AutumnTrace/hireflow-copilot) | Python AI assistant (Claude, hybrid RAG): reads the pipeline through paginated queries with a recruiter JWT, mirrors the stage state machine for its tools, and *proposes* `moveApplication` / `scheduleInterview` calls for a human to confirm |
+
 <p align="center">
   <a href="https://autumntrace.github.io/hireflow-web/">
-    <img src="https://raw.githubusercontent.com/AutumnTrace/hireflow-web/main/docs/screenshots/v1.1-pipeline.png" alt="HireFlow Web pipeline board built on this API" width="100%">
+    <img src="https://raw.githubusercontent.com/AutumnTrace/hireflow-web/main/docs/screenshots/v1.2-copilot.png" alt="HireFlow Web pipeline board built on this API, with the Copilot panel answering a question about the Senior .NET pipeline" width="100%">
   </a>
 </p>
 
