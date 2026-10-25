@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-25
+
 ### Added
 
 - Case-insensitive string filters `icontains` and `istartsWith` on every string field, consistent on SQLite and PostgreSQL. The built-in `contains` / `startsWith` stay case-sensitive (#15)
@@ -47,7 +49,8 @@ First stable release.
 - Docker image published to GitHub Container Registry on every release tag
 - Dependabot, issue and pull request templates (#3)
 
-[Unreleased]: https://github.com/AutumnTrace/hireflow/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/AutumnTrace/hireflow/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/AutumnTrace/hireflow/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/AutumnTrace/hireflow/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/AutumnTrace/hireflow/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/AutumnTrace/hireflow/releases/tag/v1.0.0
