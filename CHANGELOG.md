@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Case-insensitive string filters `icontains` and `istartsWith` on every string field, consistent on SQLite and PostgreSQL. The built-in `contains` / `startsWith` stay case-sensitive (#15)
+
 ## [1.1.1] - 2026-10-22
 
 ### Fixed
