@@ -80,6 +80,14 @@ query MyWeek {
   }
 }
 
+# (auth) Search people without caring about case. Built-in `contains` is case-sensitive; `icontains` and `istartsWith` are not.
+query FindCandidate($term: String!) {
+  candidates(where: { or: [{ fullName: { icontains: $term } }, { email: { icontains: $term } }] }) {
+    totalCount
+    nodes { fullName email headline }
+  }
+}
+
 # (auth) Move a candidate forward. Errors are part of the schema, so clients can switch on __typename.
 mutation Advance($applicationId: UUID!) {
   moveApplication(input: { applicationId: $applicationId, stage: SCREENING, note: "Great portfolio" }) {

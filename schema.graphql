@@ -796,6 +796,10 @@ input StringOperationFilterInput {
   nstartsWith: String @cost(weight: "20")
   endsWith: String @cost(weight: "20")
   nendsWith: String @cost(weight: "20")
+  "Case-insensitive substring match."
+  icontains: String @cost(weight: "20")
+  "Case-insensitive prefix match."
+  istartsWith: String @cost(weight: "20")
 }
 
 input SubmitApplicationInput {

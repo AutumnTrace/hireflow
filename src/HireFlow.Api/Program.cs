@@ -1,5 +1,6 @@
 using HireFlow.Api.Auth;
 using HireFlow.Api.Cors;
+using HireFlow.Api.GraphQL.Filtering;
 using HireFlow.Api.Health;
 using HireFlow.Infrastructure;
 using HireFlow.Infrastructure.Persistence;
@@ -17,7 +18,7 @@ builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
     .AddApiTypes()
-    .AddFiltering()
+    .AddFiltering<HireFlowFilterConvention>()
     .AddSorting()
     .AddMutationConventions(applyToAllMutations: true)
     .AddInMemorySubscriptions()

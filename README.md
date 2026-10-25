@@ -12,7 +12,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 ![GraphQL](https://img.shields.io/badge/GraphQL-Hot%20Chocolate%2016-E10098?logo=graphql&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-10-512BD4)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Example operations](#-example-operations) · [Design decisions](#-design-decisions) · [Changelog](CHANGELOG.md)
@@ -42,7 +42,7 @@ Built with **.NET 10**, **Hot Chocolate 16** and **EF Core 10**.
 
 | | |
 |---|---|
-| 🔎 **Rich querying** | Cursor pagination, filtering and sorting on every list (`where`, `order`, `first/after`, `totalCount`) |
+| 🔎 **Rich querying** | Cursor pagination, filtering and sorting on every list (`where`, `order`, `first/after`, `totalCount`), plus case-insensitive `icontains` / `istartsWith` on every string |
 | ⚡ **No N+1 queries** | Every relationship is resolved through batched, source-generated **DataLoaders** |
 | 🧱 **Domain-driven core** | The hiring pipeline is an explicit **state machine**; illegal moves are impossible, not just discouraged |
 | 🧯 **Errors as data** | Business failures come back as **typed GraphQL errors** (`InvalidStageTransitionError`, `DuplicateApplicationError`, …) through mutation conventions |
@@ -433,7 +433,7 @@ Every key can be set through environment variables, e.g. `Database__Provider=Pos
 - [ ] Global object identification (`node(id:)`) for Relay clients
 - [x] Candidate ↔ job skill matching score
 - [ ] OpenTelemetry tracing for resolvers and SQL
-- [ ] Case-insensitive text search (Hot Chocolate `contains` is case-sensitive on SQLite and PostgreSQL)
+- [x] Case-insensitive text search (`icontains`, `istartsWith`)
 
 ## 📄 License
 
