@@ -5,10 +5,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HotChocolate.AspNetCore" Version="16.6.9" />
-    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="16.6.9" />
-    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="16.6.9" />
-    <PackageReference Include="HotChocolate.Types.Analyzers" Version="16.6.9" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="16.7.3" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="16.7.3" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="16.7.3" />
+    <PackageReference Include="HotChocolate.Types.Analyzers" Version="16.7.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.13" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.13" />
   </ItemGroup>
