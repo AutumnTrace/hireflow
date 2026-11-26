@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-26
+
+### Changed
+
+- HotChocolate 16.7.6. Cost analysis now prices filter and sort variables by their coerced values, so the `VariableMultiplier = 1` workaround from 1.1.1 is gone. The 2000 field-cost budget is unchanged, and fan-out queries are still rejected (#25)
+- Microsoft.AspNetCore and EF Core health-check packages 10.0.15 (#20); coverlet.collector 10.1.1 (#24)
+
 ## [1.2.0] - 2026-10-25
 
 ### Added
@@ -49,7 +56,8 @@ First stable release.
 - Docker image published to GitHub Container Registry on every release tag
 - Dependabot, issue and pull request templates (#3)
 
-[Unreleased]: https://github.com/AutumnTrace/hireflow/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/AutumnTrace/hireflow/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/AutumnTrace/hireflow/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/AutumnTrace/hireflow/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/AutumnTrace/hireflow/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/AutumnTrace/hireflow/compare/v1.0.0...v1.1.0
